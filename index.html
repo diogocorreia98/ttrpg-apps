@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D&D Combat Tracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>D&D Combat Tracker</h1>
+    <div id="combat-controls">
+        <label>
+            In Combat?
+            <input type="checkbox" id="combatToggle">
+        </label>
+        <button id="startTurn" disabled>Start Turn</button>
+        <button id="endTurn" disabled>End Turn</button>
+    </div>
+
+    <h2>Hands</h2>
+    <div id="hands">
+        <div>Left Hand: <input type="text" id="leftHand" placeholder="empty"></div>
+        <div>Right Hand: <input type="text" id="rightHand" placeholder="empty"></div>
+    </div>
+
+    <h2>Actions</h2>
+    <div id="actions">
+        <div>Actions Remaining: <span id="actionCount">0</span></div>
+        <div>Free Interaction Remaining: <span id="interactionCount">0</span></div>
+        <button id="attackAction" disabled>Attack Action</button>
+        <button id="utilizeAction" disabled>Utilize Action</button>
+        <button id="freeInteract" disabled>Use Free Interaction</button>
+    </div>
+
+    <div id="attackSection" style="display:none;">
+        <h3>Attack Action</h3>
+        <p>Select a hand to attack with. You may equip or unequip a weapon before attacking.</p>
+        <button id="attackLeft">Attack with Left</button>
+        <button id="attackRight">Attack with Right</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
