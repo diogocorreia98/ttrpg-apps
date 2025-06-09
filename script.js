@@ -9,6 +9,8 @@ const attackLeftBtn = document.getElementById('attackLeft');
 const attackRightBtn = document.getElementById('attackRight');
 const actionCountSpan = document.getElementById('actionCount');
 const interactionCountSpan = document.getElementById('interactionCount');
+const leftHandInput = document.getElementById('leftHand');
+const rightHandInput = document.getElementById('rightHand');
 
 let actions = 0;
 let freeInteraction = 0;
@@ -18,6 +20,15 @@ combatToggle.addEventListener('change', () => {
     inCombat = combatToggle.checked;
     startTurnBtn.disabled = !inCombat;
     endTurnBtn.disabled = !inCombat;
+    leftHandInput.disabled = inCombat;
+    rightHandInput.disabled = inCombat;
+
+    if (!inCombat) {
+        actions = 0;
+        freeInteraction = 0;
+        updateCounts();
+        attackSection.style.display = 'none';
+    }
 });
 
 startTurnBtn.addEventListener('click', () => {
@@ -35,6 +46,7 @@ endTurnBtn.addEventListener('click', () => {
     attackBtn.disabled = true;
     utilizeBtn.disabled = true;
     freeInteractBtn.disabled = true;
+    attackSection.style.display = 'none';
 });
 
 function updateCounts() {
@@ -73,7 +85,20 @@ utilizeBtn.addEventListener('click', () => {
     if (actions > 0) {
         actions -= 1;
         updateCounts();
-        alert('Utilize Action used for object interaction or weapon management.');
+        const choice = prompt(
+            'Describe your utilize action.\n' +
+            "Type 'L <item>' or 'R <item>' to change a hand's equipment, or describe your interaction." 
+        );
+        if (choice) {
+            const trimmed = choice.trim();
+            if (trimmed.toLowerCase().startsWith('l ')) {
+                leftHandInput.value = trimmed.slice(2);
+            } else if (trimmed.toLowerCase().startsWith('r ')) {
+                rightHandInput.value = trimmed.slice(2);
+            } else {
+                alert(`Interaction noted: ${trimmed}`);
+            }
+        }
     }
 });
 
