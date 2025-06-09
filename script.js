@@ -9,6 +9,11 @@ const attackLeftBtn = document.getElementById('attackLeft');
 const attackRightBtn = document.getElementById('attackRight');
 const actionCountSpan = document.getElementById('actionCount');
 const interactionCountSpan = document.getElementById('interactionCount');
+const leftHandInput = document.getElementById('leftHand');
+const rightHandInput = document.getElementById('rightHand');
+const editLeftBtn = document.getElementById('editLeft');
+const editRightBtn = document.getElementById('editRight');
+const mirrorBtn = document.getElementById('mirrorHand');
 
 let actions = 0;
 let freeInteraction = 0;
@@ -25,6 +30,7 @@ startTurnBtn.addEventListener('click', () => {
     freeInteraction = 1;
     updateCounts();
     startTurnBtn.disabled = true;
+    checkHands();
 });
 
 endTurnBtn.addEventListener('click', () => {
@@ -35,6 +41,7 @@ endTurnBtn.addEventListener('click', () => {
     attackBtn.disabled = true;
     utilizeBtn.disabled = true;
     freeInteractBtn.disabled = true;
+    checkHands();
 });
 
 function updateCounts() {
@@ -43,6 +50,44 @@ function updateCounts() {
     attackBtn.disabled = actions === 0;
     utilizeBtn.disabled = actions === 0;
     freeInteractBtn.disabled = freeInteraction === 0;
+}
+
+function checkHands() {
+    const leftEmpty = leftHandInput.value === '';
+    const rightEmpty = rightHandInput.value === '';
+    mirrorBtn.style.display = (leftEmpty !== rightEmpty) ? 'inline-block' : 'none';
+}
+
+function editHand(handId) {
+    const hand = document.getElementById(handId);
+    const options = [
+        'lighting source',
+        'shield',
+        'spellcasting focus',
+        'two-handed weapon',
+        'one-handed weapon',
+        'another item',
+        'empty'
+    ];
+    const current = hand.value || 'empty';
+    const choice = prompt(
+        `Choose equipment for your ${handId.replace('Hand', '')} hand:\n${options.join('\n')}\n(Current: ${current})`
+    );
+    if (!choice) return;
+    const newItem = choice === 'empty' ? '' : choice;
+    const wasShield = current === 'shield';
+    const isShield = newItem === 'shield';
+    if (wasShield !== isShield) {
+        if (actions > 0) {
+            actions -= 1;
+            updateCounts();
+        } else {
+            alert('No actions left to equip or unequip a shield.');
+            return;
+        }
+    }
+    hand.value = newItem;
+    checkHands();
 }
 
 attackBtn.addEventListener('click', () => {
@@ -59,6 +104,7 @@ function handleAttack(handInput) {
     const equip = prompt(`You attacked with your ${handInput.replace('Hand', '')} hand holding '${current}'.\nWould you like to change what's equipped? If yes, type the new item. Leave blank to keep the same.`);
     if (equip !== null && equip !== '') {
         hand.value = equip;
+        checkHands();
     }
     const more = confirm('Do you have more attacks?');
     if (!more) {
@@ -84,3 +130,17 @@ freeInteractBtn.addEventListener('click', () => {
         alert('Free Interaction used.');
     }
 });
+
+editLeftBtn.addEventListener('click', () => editHand('leftHand'));
+editRightBtn.addEventListener('click', () => editHand('rightHand'));
+
+mirrorBtn.addEventListener('click', () => {
+    if (leftHandInput.value && !rightHandInput.value) {
+        rightHandInput.value = leftHandInput.value;
+    } else if (rightHandInput.value && !leftHandInput.value) {
+        leftHandInput.value = rightHandInput.value;
+    }
+    checkHands();
+});
+
+checkHands();
