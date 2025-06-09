@@ -19,8 +19,15 @@
 
     <h2>Hands</h2>
     <div id="hands">
-        <div>Left Hand: <input type="text" id="leftHand" placeholder="empty"></div>
-        <div>Right Hand: <input type="text" id="rightHand" placeholder="empty"></div>
+        <div>Left Hand: <input type="text" id="leftHand" placeholder="empty"> <button id="editLeft">Edit</button></div>
+        <div>Right Hand: <input type="text" id="rightHand" placeholder="empty"> <button id="editRight">Edit</button></div>
+    </div>
+    <button id="mirrorHand" style="display:none;">Mirror Item</button>
+
+    <div id="equipChooser" style="display:none;">
+        <p id="equipPrompt"></p>
+        <div id="equipOptions"></div>
+        <button id="equipCancel">Cancel</button>
     </div>
 
     <h2>Actions</h2>
