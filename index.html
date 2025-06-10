@@ -13,14 +13,13 @@
             In Combat?
             <input type="checkbox" id="combatToggle">
         </label>
-        <button id="startTurn" disabled>Start Turn</button>
-        <button id="endTurn" disabled>End Turn</button>
+        <button id="newTurn" disabled>Start New Turn</button>
     </div>
 
     <h2>Hands</h2>
     <div id="hands">
-        <div>Left Hand: <input type="text" id="leftHand" placeholder="empty"> <button id="editLeft">Equip</button></div>
-        <div>Right Hand: <input type="text" id="rightHand" placeholder="empty"> <button id="editRight">Equip</button></div>
+        <div>Left Hand: <span id="leftHand" class="hand-slot">empty</span> <button id="editLeft">Equip</button></div>
+        <div>Right Hand: <span id="rightHand" class="hand-slot">empty</span> <button id="editRight">Equip</button></div>
     </div>
     <button id="mirrorHand" style="display:none;">Mirror Item</button>
 

@@ -36,3 +36,11 @@ button {
 .popup li:hover {
     background: #eee;
 }
+
+.hand-slot {
+    display: inline-block;
+    min-width: 80px;
+    padding: 2px 4px;
+    border: 1px solid #ccc;
+    margin-right: 5px;
+}
