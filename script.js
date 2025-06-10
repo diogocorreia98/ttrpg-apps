@@ -14,6 +14,28 @@ const rightHandInput = document.getElementById('rightHand');
 const editLeftBtn = document.getElementById('editLeft');
 const editRightBtn = document.getElementById('editRight');
 const mirrorBtn = document.getElementById('mirrorHand');
+const equipmentPopup = document.getElementById('equipmentPopup');
+const equipmentOptions = document.getElementById('equipmentOptions');
+const cancelPopup = document.getElementById('cancelPopup');
+
+const optionList = [
+    'lighting source',
+    'shield',
+    'spellcasting focus',
+    'two-handed weapon',
+    'one-handed weapon',
+    'another item',
+    'empty'
+];
+
+let editTarget = null;
+
+optionList.forEach(opt => {
+    const li = document.createElement('li');
+    li.textContent = opt;
+    li.dataset.value = opt;
+    equipmentOptions.appendChild(li);
+});
 
 let actions = 0;
 let freeInteraction = 0;
@@ -59,35 +81,9 @@ function checkHands() {
 }
 
 function editHand(handId) {
-    const hand = document.getElementById(handId);
-    const options = [
-        'lighting source',
-        'shield',
-        'spellcasting focus',
-        'two-handed weapon',
-        'one-handed weapon',
-        'another item',
-        'empty'
-    ];
-    const current = hand.value || 'empty';
-    const choice = prompt(
-        `Choose equipment for your ${handId.replace('Hand', '')} hand:\n${options.join('\n')}\n(Current: ${current})`
-    );
-    if (!choice) return;
-    const newItem = choice === 'empty' ? '' : choice;
-    const wasShield = current === 'shield';
-    const isShield = newItem === 'shield';
-    if (wasShield !== isShield) {
-        if (actions > 0) {
-            actions -= 1;
-            updateCounts();
-        } else {
-            alert('No actions left to equip or unequip a shield.');
-            return;
-        }
-    }
-    hand.value = newItem;
-    checkHands();
+    editTarget = document.getElementById(handId);
+    document.getElementById('popupPrompt').textContent = `Choose equipment for your ${handId.replace('Hand', '')} hand:`;
+    equipmentPopup.style.display = 'block';
 }
 
 attackBtn.addEventListener('click', () => {
@@ -129,6 +125,35 @@ freeInteractBtn.addEventListener('click', () => {
         updateCounts();
         alert('Free Interaction used.');
     }
+});
+
+equipmentOptions.addEventListener('click', (e) => {
+    if (!editTarget) return;
+    const li = e.target.closest('li');
+    if (!li) return;
+    const choice = li.dataset.value;
+    const current = editTarget.value || 'empty';
+    const newItem = choice === 'empty' ? '' : choice;
+    const wasShield = current === 'shield';
+    const isShield = newItem === 'shield';
+    if (wasShield !== isShield) {
+        if (actions > 0) {
+            actions -= 1;
+            updateCounts();
+        } else {
+            alert('No actions left to equip or unequip a shield.');
+            return;
+        }
+    }
+    editTarget.value = newItem;
+    equipmentPopup.style.display = 'none';
+    editTarget = null;
+    checkHands();
+});
+
+cancelPopup.addEventListener('click', () => {
+    equipmentPopup.style.display = 'none';
+    editTarget = null;
 });
 
 editLeftBtn.addEventListener('click', () => editHand('leftHand'));
