@@ -38,6 +38,7 @@ const optionList = [
 ];
 
 let editTarget = null;
+let popupCallback = null;
 
 optionList.forEach(opt => {
     const li = document.createElement('li');
@@ -113,8 +114,9 @@ function checkHands() {
     updateEquipButtons();
 }
 
-function editHand(handId) {
+function editHand(handId, cb) {
     editTarget = document.getElementById(handId);
+    popupCallback = typeof cb === 'function' ? cb : null;
     document.getElementById('popupPrompt').textContent = `Choose equipment for your ${handId.replace('Hand', '')} hand:`;
     equipmentPopup.style.display = 'block';
 }
@@ -155,15 +157,13 @@ attackBtn.addEventListener('click', () => {
 function handleAttack(handInput) {
     const hand = document.getElementById(handInput);
     const current = getHandValue(hand) || 'empty';
-    const equip = prompt(`You attacked with your ${handInput.replace('Hand', '')} hand holding '${current}'.\nWould you like to change what's equipped? If yes, type the new item. Leave blank to keep the same.`);
-    if (equip !== null && equip !== '') {
-        setHandValue(hand, equip);
-        checkHands();
-    }
-    const more = confirm('Do you have more attacks?');
-    if (!more) {
-        attackSection.style.display = 'none';
-    }
+    alert(`You attacked with your ${handInput.replace('Hand', '')} hand holding '${current}'.`);
+    editHand(handInput, () => {
+        const more = confirm('Do you have more attacks?');
+        if (!more) {
+            attackSection.style.display = 'none';
+        }
+    });
 }
 
 attackLeftBtn.addEventListener('click', () => handleAttack('leftHand'));
@@ -211,12 +211,18 @@ equipmentOptions.addEventListener('click', (e) => {
     setHandValue(editTarget, newItem);
     equipmentPopup.style.display = 'none';
     editTarget = null;
+    const cb = popupCallback;
+    popupCallback = null;
     checkHands();
+    if (cb) cb();
 });
 
 cancelPopup.addEventListener('click', () => {
     equipmentPopup.style.display = 'none';
     editTarget = null;
+    const cb = popupCallback;
+    popupCallback = null;
+    if (cb) cb();
 });
 
 editLeftBtn.addEventListener('click', () => handleEquipButton('leftHand'));
