@@ -9,3 +9,30 @@ button {
 #mirrorHand {
     margin-top: 5px;
 }
+
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    border: 1px solid #000;
+    padding: 10px;
+    z-index: 100;
+}
+
+.popup ul {
+    list-style: none;
+    padding: 0;
+}
+
+.popup li {
+    margin: 5px 0;
+    padding: 5px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+.popup li:hover {
+    background: #eee;
+}
