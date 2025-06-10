@@ -1,6 +1,5 @@
 const combatToggle = document.getElementById('combatToggle');
-const startTurnBtn = document.getElementById('startTurn');
-const endTurnBtn = document.getElementById('endTurn');
+const newTurnBtn = document.getElementById('newTurn');
 const attackBtn = document.getElementById('attackAction');
 const utilizeBtn = document.getElementById('utilizeAction');
 const freeInteractBtn = document.getElementById('freeInteract');
@@ -55,28 +54,30 @@ function updateEquipButtons() {
 
 combatToggle.addEventListener('change', () => {
     inCombat = combatToggle.checked;
-    startTurnBtn.disabled = !inCombat;
-    endTurnBtn.disabled = !inCombat;
+    newTurnBtn.disabled = !inCombat;
     updateEquipButtons();
 });
 
-startTurnBtn.addEventListener('click', () => {
+function startTurn() {
     actions = 1;
     freeInteraction = 1;
     updateCounts();
-    startTurnBtn.disabled = true;
     checkHands();
-});
+}
 
-endTurnBtn.addEventListener('click', () => {
+function endTurn() {
     actions = 0;
     freeInteraction = 0;
     updateCounts();
-    startTurnBtn.disabled = !inCombat;
     attackBtn.disabled = true;
     utilizeBtn.disabled = true;
     freeInteractBtn.disabled = true;
     checkHands();
+}
+
+newTurnBtn.addEventListener('click', () => {
+    endTurn();
+    startTurn();
 });
 
 function updateCounts() {
