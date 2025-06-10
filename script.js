@@ -19,12 +19,10 @@ const equipmentOptions = document.getElementById('equipmentOptions');
 const cancelPopup = document.getElementById('cancelPopup');
 
 const optionList = [
-    'lighting source',
+    'item',
+    'environment',
+    'weapon',
     'shield',
-    'spellcasting focus',
-    'two-handed weapon',
-    'one-handed weapon',
-    'another item',
     'empty'
 ];
 
@@ -41,10 +39,25 @@ let actions = 0;
 let freeInteraction = 0;
 let inCombat = false;
 
+function updateEquipButtons() {
+    const states = [
+        {input: leftHandInput, btn: editLeftBtn},
+        {input: rightHandInput, btn: editRightBtn}
+    ];
+    states.forEach(({input, btn}) => {
+        if (inCombat && input.value) {
+            btn.textContent = 'Unequip';
+        } else {
+            btn.textContent = 'Equip';
+        }
+    });
+}
+
 combatToggle.addEventListener('change', () => {
     inCombat = combatToggle.checked;
     startTurnBtn.disabled = !inCombat;
     endTurnBtn.disabled = !inCombat;
+    updateEquipButtons();
 });
 
 startTurnBtn.addEventListener('click', () => {
@@ -78,12 +91,32 @@ function checkHands() {
     const leftEmpty = leftHandInput.value === '';
     const rightEmpty = rightHandInput.value === '';
     mirrorBtn.style.display = (leftEmpty !== rightEmpty) ? 'inline-block' : 'none';
+    updateEquipButtons();
 }
 
 function editHand(handId) {
     editTarget = document.getElementById(handId);
     document.getElementById('popupPrompt').textContent = `Choose equipment for your ${handId.replace('Hand', '')} hand:`;
     equipmentPopup.style.display = 'block';
+}
+
+function handleEquipButton(handId) {
+    const input = document.getElementById(handId);
+    if (inCombat && input.value) {
+        if (input.value === 'shield') {
+            if (actions > 0) {
+                actions -= 1;
+                updateCounts();
+            } else {
+                alert('No actions left to unequip a shield.');
+                return;
+            }
+        }
+        input.value = '';
+        checkHands();
+    } else {
+        editHand(handId);
+    }
 }
 
 attackBtn.addEventListener('click', () => {
@@ -156,8 +189,8 @@ cancelPopup.addEventListener('click', () => {
     editTarget = null;
 });
 
-editLeftBtn.addEventListener('click', () => editHand('leftHand'));
-editRightBtn.addEventListener('click', () => editHand('rightHand'));
+editLeftBtn.addEventListener('click', () => handleEquipButton('leftHand'));
+editRightBtn.addEventListener('click', () => handleEquipButton('rightHand'));
 
 mirrorBtn.addEventListener('click', () => {
     if (leftHandInput.value && !rightHandInput.value) {
