@@ -25,6 +25,10 @@ function setHandValue(el, value) {
     el.textContent = value || 'empty';
 }
 
+function isMirroredPair(a, b) {
+    return a && b && (a === `same ${b}` || b === `same ${a}`);
+}
+
 const optionList = [
     'item',
     'environment',
@@ -128,6 +132,11 @@ function handleEquipButton(handId) {
                 return;
             }
         }
+        const otherInput = handId === 'leftHand' ? rightHandInput : leftHandInput;
+        const otherVal = getHandValue(otherInput);
+        if (isMirroredPair(current, otherVal)) {
+            setHandValue(otherInput, '');
+        }
         setHandValue(input, '');
         checkHands();
     } else {
@@ -194,6 +203,11 @@ equipmentOptions.addEventListener('click', (e) => {
             return;
         }
     }
+    const otherInput = editTarget.id === 'leftHand' ? rightHandInput : leftHandInput;
+    const otherVal = getHandValue(otherInput);
+    if (newItem === '' && isMirroredPair(current, otherVal)) {
+        setHandValue(otherInput, '');
+    }
     setHandValue(editTarget, newItem);
     equipmentPopup.style.display = 'none';
     editTarget = null;
@@ -212,9 +226,9 @@ mirrorBtn.addEventListener('click', () => {
     const leftVal = getHandValue(leftHandInput);
     const rightVal = getHandValue(rightHandInput);
     if (leftVal && !rightVal) {
-        setHandValue(rightHandInput, leftVal);
+        setHandValue(rightHandInput, `same ${leftVal}`);
     } else if (rightVal && !leftVal) {
-        setHandValue(leftHandInput, rightVal);
+        setHandValue(leftHandInput, `same ${rightVal}`);
     }
     checkHands();
 });
