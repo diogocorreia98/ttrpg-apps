@@ -17,6 +17,14 @@ const equipmentPopup = document.getElementById('equipmentPopup');
 const equipmentOptions = document.getElementById('equipmentOptions');
 const cancelPopup = document.getElementById('cancelPopup');
 
+function getHandValue(el) {
+    return el.textContent === 'empty' ? '' : el.textContent;
+}
+
+function setHandValue(el, value) {
+    el.textContent = value || 'empty';
+}
+
 const optionList = [
     'item',
     'environment',
@@ -44,7 +52,7 @@ function updateEquipButtons() {
         {input: rightHandInput, btn: editRightBtn}
     ];
     states.forEach(({input, btn}) => {
-        if (inCombat && input.value) {
+        if (inCombat && getHandValue(input)) {
             btn.textContent = 'Unequip';
         } else {
             btn.textContent = 'Equip';
@@ -55,7 +63,12 @@ function updateEquipButtons() {
 combatToggle.addEventListener('change', () => {
     inCombat = combatToggle.checked;
     newTurnBtn.disabled = !inCombat;
+    if (!inCombat) {
+        endTurn();
+        attackSection.style.display = 'none';
+    }
     updateEquipButtons();
+    checkHands();
 });
 
 function startTurn() {
@@ -75,6 +88,7 @@ function endTurn() {
     checkHands();
 }
 
+// Start a new turn regardless of remaining resources
 newTurnBtn.addEventListener('click', () => {
     endTurn();
     startTurn();
@@ -89,8 +103,8 @@ function updateCounts() {
 }
 
 function checkHands() {
-    const leftEmpty = leftHandInput.value === '';
-    const rightEmpty = rightHandInput.value === '';
+    const leftEmpty = getHandValue(leftHandInput) === '';
+    const rightEmpty = getHandValue(rightHandInput) === '';
     mirrorBtn.style.display = (leftEmpty !== rightEmpty) ? 'inline-block' : 'none';
     updateEquipButtons();
 }
@@ -103,8 +117,9 @@ function editHand(handId) {
 
 function handleEquipButton(handId) {
     const input = document.getElementById(handId);
-    if (inCombat && input.value) {
-        if (input.value === 'shield') {
+    const current = getHandValue(input);
+    if (inCombat && current) {
+        if (current === 'shield') {
             if (actions > 0) {
                 actions -= 1;
                 updateCounts();
@@ -113,7 +128,7 @@ function handleEquipButton(handId) {
                 return;
             }
         }
-        input.value = '';
+        setHandValue(input, '');
         checkHands();
     } else {
         editHand(handId);
@@ -130,10 +145,10 @@ attackBtn.addEventListener('click', () => {
 
 function handleAttack(handInput) {
     const hand = document.getElementById(handInput);
-    const current = hand.value || 'empty';
+    const current = getHandValue(hand) || 'empty';
     const equip = prompt(`You attacked with your ${handInput.replace('Hand', '')} hand holding '${current}'.\nWould you like to change what's equipped? If yes, type the new item. Leave blank to keep the same.`);
     if (equip !== null && equip !== '') {
-        hand.value = equip;
+        setHandValue(hand, equip);
         checkHands();
     }
     const more = confirm('Do you have more attacks?');
@@ -166,7 +181,7 @@ equipmentOptions.addEventListener('click', (e) => {
     const li = e.target.closest('li');
     if (!li) return;
     const choice = li.dataset.value;
-    const current = editTarget.value || 'empty';
+    const current = getHandValue(editTarget) || 'empty';
     const newItem = choice === 'empty' ? '' : choice;
     const wasShield = current === 'shield';
     const isShield = newItem === 'shield';
@@ -179,7 +194,7 @@ equipmentOptions.addEventListener('click', (e) => {
             return;
         }
     }
-    editTarget.value = newItem;
+    setHandValue(editTarget, newItem);
     equipmentPopup.style.display = 'none';
     editTarget = null;
     checkHands();
@@ -194,10 +209,12 @@ editLeftBtn.addEventListener('click', () => handleEquipButton('leftHand'));
 editRightBtn.addEventListener('click', () => handleEquipButton('rightHand'));
 
 mirrorBtn.addEventListener('click', () => {
-    if (leftHandInput.value && !rightHandInput.value) {
-        rightHandInput.value = leftHandInput.value;
-    } else if (rightHandInput.value && !leftHandInput.value) {
-        leftHandInput.value = rightHandInput.value;
+    const leftVal = getHandValue(leftHandInput);
+    const rightVal = getHandValue(rightHandInput);
+    if (leftVal && !rightVal) {
+        setHandValue(rightHandInput, leftVal);
+    } else if (rightVal && !leftVal) {
+        setHandValue(leftHandInput, rightVal);
     }
     checkHands();
 });
